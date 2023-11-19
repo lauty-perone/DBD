@@ -1,0 +1,61 @@
+PARCIAL 1: 
+//ejercicio1
+
+SELECT l.Titulo, g.nombre_Genero, l.descripcion
+FROM Libro l INNER JOIN Genero g ON (l.Cod_Genero = g.Cod_Genero)
+             INNER JOIN Libro-Editorial le ON (l.ISBN =le.ISBN)
+             INNER JOIN Editorial e ON (le.Cod_Editorial = e.Cod_Editorial)
+WHERE (e.Denominacion= "Nueva Editorial")
+ORDER BY l.Titulo
+
+//ejercicio2
+SELECT s.apellido, s.nombre
+FROM Socio s 
+WHERE (s.Fecha_Ingreso BETWEEN "01/9/2022" AND "30/09/2022")
+ORDER BY s.apellido, s.nombre
+
+//ejercicio3
+SELECT s.nombre,s.apellido, s.Fecha_Nacimiento, COUNT (*) AS CantidadPrestamos
+FROM Socio s INNER JOIN Prestamo p ON (s.nro_socio = p.nro_socio)
+GROUP BY s.nro_socio, s.DNI, s.apellido,s.nombre,s.Fecha_Nacimiento, s.Fecha_Ingreso
+HAVING COUNT (*)> 5
+ORDER BY s.apellido
+
+//ejercicio4
+
+SELECT s.DNI, s.apellido, s.nombre
+FROM Socio s
+EXCEPT (
+    SELECT s.DNI, s.apellido,s.nombre
+    FROM Socio s INNER JOIN Prestamo p ON (s.nro_socio = p.nro_socio)
+                 INNER JOIN Libro-Editorial le ON (p.ISBN = le.ISBN)
+                 INNER JOIN Editorial e ON (le.Cod_Editorial = e.Cod_Editorial)
+    WHERE (e.Denominacion = "Gran Editorial")
+)
+ORDER BY s.apellido ,s.nombre
+
+//ejercicio5
+SELECT COUNT(*) AS CantidadSociosConLibrosPrestados
+FROM Socio s INNER JOIN Prestamo p ON (s.nro_socio = p.nro_socio)
+             INNER JOIN Copia c ON (p.ISBN =c.ISBN ) AND (p.nro_ejemplar = c.nro_ejemplar)
+WHERE (c.estado = "Bueno")
+GROUP BY s.nro_socio, s.DNI, s.apellido, s.nombre
+
+PARCIAL 2
+//ejercicio1
+SELECT DISTINCT t.descripcionTipo, o.fechaCrea, o.nombreO, o.calle,o.nro,l.nombreL
+FROM Obra o INNER JOIN TipoObra t ON (o.idTipo = t.idTipo)
+            INNER JOIN Localidad l ON (o.codigoPostal = l.codigoPostal)
+            INNER JOIN Artista_Obra ao ON (o.nroObra = ao.nroObra)
+            INNER JOIN Artista a ON (ao.idArtista = a.idArtista)
+WHERE (a.nombre ="Jose") AND (a.apellido= "Ayala") AND (a.DNI = 22222222)
+INTERSECT (
+    SELECT DISTINCT t.descripcionTipo, o.fechaCrea, o.nombreO, o.calle,o.nro,l.nombreL
+    FROM Obra o INNER JOIN TipoObra t ON (o.idTipo = t.idTipo)
+            INNER JOIN Localidad l ON (o.codigoPostal = l.codigoPostal)
+            INNER JOIN Artista_Obra ao ON (o.nroObra = ao.nroObra)
+            INNER JOIN Artista a ON (ao.idArtista = a.idArtista)
+    WHERE (a.nombre ="Juan") AND (a.apellido= "Artigas") AND (a.pasaporte = "AR123456")
+)
+
+//ejercicio2
